@@ -78,16 +78,46 @@ export class Peer {
 
   private createPeerFolder(peerId: string): void {
     try {
-      const folderPath = path.join(process.cwd(), `store-${peerId}`);
+      // Ensure the main store directory exists
+      const storeDir = path.join(process.cwd(), 'store');
+      if (!fs.existsSync(storeDir)) {
+        fs.mkdirSync(storeDir);
+        console.log(`Created main store directory: ${storeDir}`);
+      }
 
-      if (!fs.existsSync(folderPath)) {
-        fs.mkdirSync(folderPath);
-        console.log(`Created folder for peer: ${folderPath}`);
+      // Create peer-specific directory inside the store directory
+      const peerDir = path.join(storeDir, peerId);
+      if (!fs.existsSync(peerDir)) {
+        fs.mkdirSync(peerDir);
+        console.log(`Created peer directory: ${peerDir}`);
       } else {
-        console.log(`Folder for peer already exists: ${folderPath}`);
+        console.log(`Peer directory already exists: ${peerDir}`);
+      }
+
+      // Create state directory inside the peer folder
+      const stateDirPath = path.join(peerDir, 'state');
+      if (!fs.existsSync(stateDirPath)) {
+        fs.mkdirSync(stateDirPath);
+        console.log(`Created state directory: ${stateDirPath}`);
+      } else {
+        console.log(`State directory already exists: ${stateDirPath}`);
+      }
+
+      // Create state.json file with default values
+      const stateFilePath = path.join(stateDirPath, 'state.json');
+      const defaultStateContent = JSON.stringify({
+        current_hash: "",
+        target_hash: ""
+      }, null, 2);
+
+      if (!fs.existsSync(stateFilePath)) {
+        fs.writeFileSync(stateFilePath, defaultStateContent);
+        console.log(`Created state.json file with default values: ${stateFilePath}`);
+      } else {
+        console.log(`State.json file already exists: ${stateFilePath}`);
       }
     } catch (error) {
-      console.error(`Error creating folder for peer ${peerId}:`, error);
+      console.error(`Error setting up folder structure for peer ${peerId}:`, error);
     }
   }
 }
