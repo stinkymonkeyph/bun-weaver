@@ -78,7 +78,7 @@ export class Peer {
 
   private createPeerFolder(peerId: string): void {
     try {
-      const folderPath = path.join(process.cwd(), peerId);
+      const folderPath = path.join(process.cwd(), `store-${peerId}`);
 
       if (!fs.existsSync(folderPath)) {
         fs.mkdirSync(folderPath);
